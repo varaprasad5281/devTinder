@@ -1,0 +1,22 @@
+{
+  "name": "devtinder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/varaprasad5281/devTinder.git"
+  },
+  "author": "Vara Prasad Kanugula",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/varaprasad5281/devTinder/issues"
+  },
+  "homepage": "https://github.com/varaprasad5281/devTinder#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
