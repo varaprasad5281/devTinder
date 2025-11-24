@@ -5,8 +5,8 @@ app.use("/test", (req, res) => {
   res.send("This is Test Page");
 });
 
-app.use("/hello", (req, res) => {
-  res.send("Hello from the server");
+app.use("/about", (req, res) => {
+  res.send("This is about page");
 });
 app.use("/", (req, res) => {
   res.send("This is Home page of your App");
