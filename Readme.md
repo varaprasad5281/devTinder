@@ -6,4 +6,4 @@
 - Listen to PORT:9999
 - Write request handlers for different routes
 - Install nodemon and update the scripts inside the package.json
--
+- Database connection using mongoose

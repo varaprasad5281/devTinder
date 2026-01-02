@@ -1,17 +1,14 @@
 const express = require("express");
+const connectDb = require("./Config/database");
 const app = express();
 
-app.use("/test", (req, res) => {
-  res.send("This is Test Page");
-});
-
-app.use("/about", (req, res) => {
-  res.send("This is about page");
-});
-app.use("/", (req, res) => {
-  res.send("This is Home page of your App");
-});
-
-app.listen("9999", () => {
-  console.log("Your express app is running in the portal:9999");
-});
+connectDb()
+  .then(() => {
+    console.log("Database connection successful...");
+    app.listen("9999", () => {
+      console.log("Your express app is running in the portal:9999");
+    });
+  })
+  .catch((err) =>
+    console.log("Ooops! Error occured while connecting to the database...", err)
+  );
