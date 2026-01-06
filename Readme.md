@@ -10,3 +10,5 @@
 - Create a userSchema & User model
 - Create POST /singup API to add data to database
 - Error handling using try/catch method
+- Add the express.json() middleware to convert JSON into the javascript object
+- Make the signup dynamic
