@@ -7,3 +7,6 @@
 - Write request handlers for different routes
 - Install nodemon and update the scripts inside the package.json
 - Database connection using mongoose
+- Create a userSchema & User model
+- Create POST /singup API to add data to database
+- Error handling using try/catch method
