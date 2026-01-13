@@ -12,3 +12,7 @@
 - Error handling using try/catch method
 - Add the express.json() middleware to convert JSON into the javascript object
 - Make the signup dynamic
+- Learned all the different type of Model methods
+- Created a custom validtions using runValidators
+- Schema type options like [defalut,min,minLength,unique,lowercase,required]
+- Added times stamps to the user schema

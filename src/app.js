@@ -7,14 +7,74 @@ const app = express();
 app.use(express.json()); // Converts the JSON into the Object (Middleware )
 
 // Creating API's
-app.post("/signup", async (req, res) => {
+app.post("/user", async (req, res) => {
   // Creating a new instance of the user model
   const user = new User(req.body);
   try {
-    await user.save();
+    await user.save({ runValidators: true });
     res.send("User added successfully!");
   } catch (err) {
-    res.status(400).send("Error saving the user", err.message);
+    res.status(400).send("Error saving the user" + err.message);
+  }
+});
+
+//How to find one user from the databse
+
+app.get("/user", async (req, res) => {
+  const userId = req.body.id;
+  try {
+    const user = await User.findById({ _id: userId });
+    if (!user) {
+      res.send("User not found");
+    }
+    res.send(user);
+  } catch (err) {
+    res.status(400).send("something went wrong" + err.message);
+  }
+});
+
+// Delete API  Data from the databse
+
+app.delete("/user", async (req, res) => {
+  const userId = await req.body.id;
+  try {
+    const deleteData = await User.findByIdAndDelete({ _id: userId });
+    if (!deleteData) {
+      res.send("Oops please try again to delete it");
+    }
+    res.send("User successfully deleted!");
+  } catch (err) {
+    res.send("Unable to deleted the user..Please try again" + err.message);
+  }
+});
+
+// How to updated the user in the data base - UPDATE API
+
+app.patch("/user", async (req, res) => {
+  const userId = req.body.id;
+  const data = req.body;
+  try {
+    const updateFirstName = await User.findByIdAndUpdate(userId, data, {
+      runValidators: true,
+    });
+    res.send("User udpated successfully!");
+  } catch (err) {
+    res.send("Unable to updated the request" + err.message);
+  }
+});
+
+// Get all the User data from the databse
+app.get("/user", async (req, res) => {
+  const firstUserMail = req.body.emailId;
+  try {
+    const output = await User.findOne({ emailId: firstUserMail });
+    res.send(output);
+  } catch (err) {
+    res
+      .status(400)
+      .send(
+        "Error occuered while get the data form the database" + err.message
+      );
   }
 });
 
@@ -26,5 +86,7 @@ connectDb()
     });
   })
   .catch((err) =>
-    console.log("Ooops! Error occured while connecting to the database...", err)
+    console.log(
+      "Ooops! Error occured while connecting to the database..." + err.message
+    )
   );
