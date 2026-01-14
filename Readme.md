@@ -19,3 +19,4 @@
 - Added validations for the PATCH requests
 - Data sanitizations API Level validations for the each field
 - Used schema level validations by using validator.js library
+- Password encryption using bcrypt library - password has using bcrypt library and saved the user with encrypted format

@@ -1,6 +1,8 @@
 const express = require("express");
 const connectDb = require("./Config/database");
 const User = require("./model/user");
+const validations = require("./utils/Validation");
+const bcrypt = require("bcrypt");
 
 const app = express();
 
@@ -8,9 +10,20 @@ app.use(express.json()); // Converts the JSON into the Object (Middleware )
 
 // Creating API's
 app.post("/user", async (req, res) => {
-  // Creating a new instance of the user model
-  const user = new User(req.body);
   try {
+    const { firstName, lastName, emailId, password } = req.body;
+    // Validation of data
+    validations(req);
+    // Encrypt the passwords
+
+    const passwordHash = bcrypt.hash(password);
+    // Creating a new instance of the user model
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: passwordHash,
+    });
     await user.save({ runValidators: true });
     res.send("User added successfully!");
   } catch (err) {

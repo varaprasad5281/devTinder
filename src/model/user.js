@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
-    firstName: { type: String, required: true },
+    firstName: { type: String, required: true, minLength: 2, maxLength: 50 },
     lastName: { type: String, required: true },
     emailId: {
       type: String,
@@ -51,6 +51,7 @@ const userSchema = new Schema(
     },
     photoUrl: {
       type: String,
+      default: "https://avatars.githubusercontent.com/u/119512036?v=4&size=64",
       validate: (val) => {
         if (!validator.isURL(val)) {
           throw new Error("URL format is invalid");
