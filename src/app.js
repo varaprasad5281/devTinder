@@ -50,9 +50,17 @@ app.delete("/user", async (req, res) => {
 
 // How to updated the user in the data base - UPDATE API
 
-app.patch("/user", async (req, res) => {
-  const userId = req.body.id;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   const data = req.body;
+  const RESTRICTED_FIELDS = ["photoUrl", "about", "gender", "skills"];
+
+  const allowedFields = Object.keys(data).every((field) =>
+    RESTRICTED_FIELDS.includes(field)
+  );
+  if (!allowedFields) {
+    throw new Error("Update not allowed");
+  }
   try {
     const updateFirstName = await User.findByIdAndUpdate(userId, data, {
       runValidators: true,

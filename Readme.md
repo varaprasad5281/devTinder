@@ -16,3 +16,6 @@
 - Created a custom validtions using runValidators
 - Schema type options like [defalut,min,minLength,unique,lowercase,required]
 - Added times stamps to the user schema
+- Added validations for the PATCH requests
+- Data sanitizations API Level validations for the each field
+- Used schema level validations by using validator.js library
