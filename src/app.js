@@ -9,14 +9,14 @@ const app = express();
 app.use(express.json()); // Converts the JSON into the Object (Middleware )
 
 // Creating API's
-app.post("/user", async (req, res) => {
+app.post("/signup", async (req, res) => {
   try {
     const { firstName, lastName, emailId, password } = req.body;
     // Validation of data
     validations(req);
     // Encrypt the passwords
 
-    const passwordHash = bcrypt.hash(password);
+    const passwordHash = await bcrypt.hash(password, 10);
     // Creating a new instance of the user model
     const user = new User({
       firstName,
@@ -27,7 +27,26 @@ app.post("/user", async (req, res) => {
     await user.save({ runValidators: true });
     res.send("User added successfully!");
   } catch (err) {
-    res.status(400).send("Error saving the user" + err.message);
+    res.status(400).send("Error saving the user " + err.message);
+  }
+});
+
+// Login API
+app.post("/signin", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      res.status(404).send("Invalid credentials");
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (isPasswordValid) {
+      res.send("User login Successfull!!!!");
+    } else {
+      throw new Error("Invalid credentials");
+    }
+  } catch (err) {
+    res.status(400).send("Error" + err.message);
   }
 });
 
