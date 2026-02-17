@@ -10,6 +10,7 @@ const app = express();
 
 app.use(express.json()); // Converts the JSON into the Object (Middleware )
 app.use(cookieParser()); // Reading the cookie
+
 // Creating API's
 app.post("/signup", async (req, res) => {
   try {
@@ -43,7 +44,7 @@ app.post("/signin", async (req, res) => {
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (isPasswordValid) {
-      //Create a JWT Token
+      //Create a JWT Token (hide some data and show some privatekey over hidden data)
       const token = await jwt.sign({ _id: user._id }, "Dev@Tinder$287");
 
       // Add Token to Cookie and send response back to user
@@ -59,9 +60,27 @@ app.post("/signin", async (req, res) => {
 
 // Profile API
 app.get("/profile", async (req, res) => {
-  const cookies = req.cookies;
-  const { token } = cookies;
-  // validate token
+  try {
+    const cookies = req.cookies;
+    const { token } = cookies;
+    // validate token
+    if (!token) {
+      throw new Error("Invalid Token!");
+    }
+
+    const decodedMessage = await jwt.verify(token, "Dev@Tinder$287");
+
+    const { _id } = decodedMessage;
+    const user = await User.findById(_id);
+
+    if (!user) {
+      throw new Error("User does not exist");
+    }
+
+    res.send(user);
+  } catch (err) {
+    res.status(400).send("Error :" + err.message);
+  }
 });
 //How to find one user from the databse
 

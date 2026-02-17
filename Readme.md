@@ -20,3 +20,9 @@
 - Data sanitizations API Level validations for the each field
 - Used schema level validations by using validator.js library
 - Password encryption using bcrypt library - password has using bcrypt library and saved the user with encrypted format
+- Install collkie parser
+- Just send a dummy cookie to user
+- Create GET/profile API and just check if you get the cookie back
+- Install jsonwebtoken
+- In login API after email and password validation create a JWT token and send it to user in cookie
+- Read the cookies inside your profile API and find the looged in user
