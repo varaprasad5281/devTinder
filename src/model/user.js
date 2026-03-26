@@ -1,5 +1,6 @@
 const { default: mongoose } = require("mongoose");
 var validator = require("validator");
+const bcrypt = require("bcrypt");
 
 const { Schema } = mongoose;
 
@@ -69,6 +70,24 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
+
+userSchema.methods.getJWT = async function () {
+  const user = this;
+  const token = await jwt.sign({ _id: user._id }, "Dev@Tinder$287", {
+    expiresIn: "7d",
+  });
+  return token;
+};
+
+userSchema.method.validatePassword = async function (passwordInputByUser) {
+  const user = this;
+  const passwordHash = user.password;
+  const isPasswordValid = await bcrypt.compare(
+    passwordInputByUser,
+    passwordHash
+  );
+  return isPasswordValid;
+};
 
 const User = mongoose.model("User", userSchema);
 

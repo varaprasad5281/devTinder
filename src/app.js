@@ -1,16 +1,15 @@
 const express = require("express");
 const connectDb = require("./Config/database");
+const app = express();
 const User = require("./model/user");
 const validations = require("./utils/Validation");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
-var jwt = require("jsonwebtoken");
-
-const app = express();
+const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 
 app.use(express.json()); // Converts the JSON into the Object (Middleware )
 app.use(cookieParser()); // Reading the cookie
-
 // Creating API's
 app.post("/signup", async (req, res) => {
   try {
@@ -42,13 +41,17 @@ app.post("/signin", async (req, res) => {
     if (!user) {
       res.status(404).send("Invalid credentials");
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.validatePassword(password);
     if (isPasswordValid) {
       //Create a JWT Token (hide some data and show some privatekey over hidden data)
-      const token = await jwt.sign({ _id: user._id }, "Dev@Tinder$287");
-
+      const token = await user.getJWT();
       // Add Token to Cookie and send response back to user
-      res.cookie("token", token);
+      res.cookie(
+        "token",
+        token,
+        { expires: new Date(Date.now() + 8 * 3600000) },
+        { httpOnly: true }
+      );
       res.send("User login Successfull!!!!");
     } else {
       throw new Error("Invalid credentials");
@@ -59,95 +62,22 @@ app.post("/signin", async (req, res) => {
 });
 
 // Profile API
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    const { token } = cookies;
-    // validate token
-    if (!token) {
-      throw new Error("Invalid Token!");
-    }
-
-    const decodedMessage = await jwt.verify(token, "Dev@Tinder$287");
-
-    const { _id } = decodedMessage;
-    const user = await User.findById(_id);
-
-    if (!user) {
-      throw new Error("User does not exist");
-    }
+    const user = req.user;
 
     res.send(user);
   } catch (err) {
     res.status(400).send("Error :" + err.message);
   }
 });
-//How to find one user from the databse
 
-app.get("/user", async (req, res) => {
-  const userId = req.body.id;
-  try {
-    const user = await User.findById({ _id: userId });
-    if (!user) {
-      res.send("User not found");
-    }
-    res.send(user);
-  } catch (err) {
-    res.status(400).send("something went wrong" + err.message);
-  }
-});
+// Send connection Request
+app.post("/sendConnectionRequest", userAuth, async (req, res) => {
+  const user = req.user;
 
-// Delete API  Data from the databse
-
-app.delete("/user", async (req, res) => {
-  const userId = await req.body.id;
-  try {
-    const deleteData = await User.findByIdAndDelete({ _id: userId });
-    if (!deleteData) {
-      res.send("Oops please try again to delete it");
-    }
-    res.send("User successfully deleted!");
-  } catch (err) {
-    res.send("Unable to deleted the user..Please try again" + err.message);
-  }
-});
-
-// How to updated the user in the data base - UPDATE API
-
-app.patch("/user/:userId", async (req, res) => {
-  const userId = req.params?.userId;
-  const data = req.body;
-  const RESTRICTED_FIELDS = ["photoUrl", "about", "gender", "skills"];
-
-  const allowedFields = Object.keys(data).every((field) =>
-    RESTRICTED_FIELDS.includes(field)
-  );
-  if (!allowedFields) {
-    throw new Error("Update not allowed");
-  }
-  try {
-    const updateFirstName = await User.findByIdAndUpdate(userId, data, {
-      runValidators: true,
-    });
-    res.send("User udpated successfully!");
-  } catch (err) {
-    res.send("Unable to updated the request" + err.message);
-  }
-});
-
-// Get all the User data from the databse
-app.get("/user", async (req, res) => {
-  const firstUserMail = req.body.emailId;
-  try {
-    const output = await User.findOne({ emailId: firstUserMail });
-    res.send(output);
-  } catch (err) {
-    res
-      .status(400)
-      .send(
-        "Error occuered while get the data form the database" + err.message
-      );
-  }
+  console.log("Sending Connection request");
+  res.send(user.firstName + " Sent the connection request");
 });
 
 connectDb()
